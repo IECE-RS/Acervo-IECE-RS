@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acervo de Livros - IECE-RS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20230426/pngtree-an-old-library-or-book-room-with-some-books-and-plants-image_2521166.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s;
+        }
+
+        /* Modo escuro */
+        .dark-theme {
+            background-color: #1b2a35;
+        }
+
+        header {
+            background-color: #2F4F2F;
+            color: #fff;
+            text-align: center;
+            padding: 5px;
+            font-size: 2.0rem;
+        }
+
+        header img {
+            width: 450px;
+            margin-bottom: -20px;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Cartões dos livros */
+        .livro-card {
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 4px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            margin: 15px;
+            overflow: hidden;
+            text-align: center;
+            flex: 1 0 21%;
+            margin-bottom: 30px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+            width: 200px; /* Fixando o tamanho do cartão */
+        }
+
+        /* Garantir que as imagens dos livros tenham o mesmo tamanho fixo (185x320) */
+        .livro-card img {
+            width: 185px;
+            height: 225px;
+            object-fit: cover;
+        }
+
+        .livro-card h3 {
+            font-size: 0.7rem;
+            color: #006400;
+            margin: 10px;
+font-family: 'Arial Black', Gadget, sans-serif;
+        }
+
+        .livro-card p {
+            font-size: 0.6rem;
+            color: #222;
+            padding: 0 10px;
+            margin-bottom: 10px;
+        }
+
+        .livro-card .category {
+            font-size: 0.6rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .pagination button:hover {
+            background-color: #f1c40f;
+            color: white;
+        }
+
+        .search-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input,
+        .search-bar select {
+            padding: 10px;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 300px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+
+        .search-bar select {
+            width: auto;
+            margin-left: 10px;
+        }
+
+        /* Botão de Doar */
+        .donate-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #27ae60;
+            color: white;
+            padding: 12px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+            z-index: 999;
+        }
+
+        .donate-btn:hover {
+            background-color: #2ecc71;
+        }
+
+        /* Modal para Doação */
+        .donate-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .donate-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .donate-modal-content button {
+            background-color: #2980b9;
+            font-size: 1rem;
+            padding: 12px 25px;
+            border-radius: 10px;
+        }
+
+        .donate-modal-content button:nth-child(1) {
+            background-color: #2ecc71;
+        }
+
+        .donate-modal-content button:nth-child(1):hover {
+            background-color: #27ae60;
+        }
+
+        .donate-modal-content button:nth-child(2) {
+            background-color: #e74c3c;
+        }
+
+        .donate-modal-content button:nth-child(2):hover {
+            background-color: #c0392b;
+        }
+
+        /* Estilo para os livros lado a lado */
+        .livro-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        /* Card de livros ajustado para telas menores */
+        .livro-card {
+            flex: 1 1 48%; /* Para exibir dois cartões lado a lado */
+            margin: 10px;
+            max-width: 185px;
+            height: 380px;
+        }
+
+        /* Ajuste para telas menores */
+        @media (max-width: 768px) {
+            .livro-cards {
+                display: block; /* Um livro abaixo do outro em telas pequenas */
+            }
+
+            .livro-card {
+                margin: 10px auto;
+                max-width: 185px;
+                width: 185px;
+                height: 320px; /* Ajuste para manter a proporção da imagem */
+            }
+        }
+
+        /* Fixar o botão "Voltar para o site" */
+        .back-to-site-btn {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-to-site-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .back-to-site-btn::before {
+            content: "←";
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .back-to-site-btn {
+            z-index: 999;
+        }
+
+        /* Fixar os botões */
+        .theme-toggle-btn,
+        .back-to-site-btn {
+            position: fixed;
+            top: 10px;
+            z-index: 999;
+        }
+
+        .back-to-site-btn {
+            left: 10px;
+        }
+
+        /* Modal para Doação */
+        .donate-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .donate-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Botão Voltar para o Site -->
+    <a href="https://www.iecers.org" class="back-to-site-btn">Voltar para o site</a>
+
+    <!-- Botão Doar Livro -->
+    <button class="donate-btn" onclick="openDonateModal()">📚</button>
+
+    <header>
+        <img src="https://iecers.wordpress.com/wp-content/uploads/2025/02/horizontal-branco.png" alt="Logotipo do IECE-RS" />
+        <h1>Acervo de Livros do IECE-RS</h1>
+    </header>
+
+    <div class="container">
+        <!-- Barra de Pesquisa e Filtros -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Pesquisar por título..." onkeyup="filterBooks()">
+            <select id="categoryFilter" onchange="filterBooks()">
+                  <option value="">Todas as Categorias</option>
+                <option value="Ficção">Ficção</option>
+                <option value="Romance">Romance</option>
+                <option value="História">História</option>
+                <option value="Ciência">Ciência</option>
+                <option value="Filosofia">Filosofia</option>
+                <option value="Literatura">Literatura</option>
+                <option value="Arte">Arte</option>
+                <option value="Política">Política</option>
+                <option value="Religião">Religião</option>
+                <option value="Psicologia">Psicologia</option>
+                <option value="Educação">Educação</option>
+                <option value="Tecnologia">Tecnologia</option>
+                <option value="Economia">Economia</option>
+                <option value="Biografias">Biografias</option>
+                <option value="Geografia">Geografia</option>
+                <option value="Antropologia">Antropologia</option>
+                <option value="Sociologia">Sociologia</option>
+                <option value="Matemática">Matemática</option>
+                <option value="Medicina">Medicina</option>
+                <option value="Engenharia">Engenharia</option>
+                <option value="Arquitetura">Arquitetura</option>
+                <option value="Astronomia">Astronomia</option>
+                <option value="Química">Química</option>
+                <option value="Física">Física</option>
+                <option value="Linguística">Linguística</option>
+                <option value="Poemas">Poemas</option>
+                <option value="Contos">Contos</option>
+                <option value="Novelas">Novelas</option>
+                <option value="Ensaios">Ensaios</option>
+                <option value="Relatórios">Relatórios</option>
+                <option value="Documentários">Documentários</option>
+                <option value="Romances Históricos">Romances Históricos</option>
+                <option value="Aventura">Aventura</option>
+                <option value="Mistério">Mistério</option>
+                <option value="Terror">Terror</option>
+                <option value="Fantasia">Fantasia</option>
+                <option value="Sci-Fi">Sci-Fi</option>
+                <option value="Contos de Fadas">Contos de Fadas</option>
+                <option value="Comédia">Comédia</option>
+                <option value="Drama">Drama</option>
+                <option value="Thriller">Thriller</option>
+                <option value="Crime">Crime</option>
+                <option value="Detective">Detective</option>
+                <option value="Espionagem">Espionagem</option>
+                <option value="Ação">Ação</option>
+                <option value="Viagem no Tempo">Viagem no Tempo</option>
+                <option value="Música">Música</option>
+            </select>
+        </div>
+
+        <!-- Grid de Livros -->
+        <div class="livro-cards" id="bookGrid"></div>
+
+        <div class="pagination">
+            <button onclick="previousPage()">Página Anterior</button>
+            <button onclick="nextPage()">Próxima Página</button>
+        </div>
+    </div>
+
+    <!-- Modal Doar Livro -->
+    <div id="donateModal" class="donate-modal">
+        <div class="donate-modal-content">
+            <h2>Você deseja doar um livro?</h2>
+            <button onclick="window.location.href='https://iecers.org/doacoes-de-livro-livros/'">Doar Livro</button>
+            <button onclick="closeDonateModal()">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        const books = [
+              { "title": "TOPOLOGIA DA VIOLÊNCIA", "category": "Sociologia", "description": "Autor: HAN, Byung-Chul, Editora: VOZES, Ano: 2017", "img": "https://m.media-amazon.com/images/I/61-N-fqPgqL.jpg" },
+  { "title": "SOBRE EDUCAÇÃO E JUVENTUDE", "category": "Educação", "description": "Autor: BAUMAN, Zygmunt, Editora: ZAHAR, Ano: 2013", "img": "https://m.media-amazon.com/images/I/51q92fzvw8L._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "DEMOCRACIA, CIDADANIA E SOCIEDADE CIVIL", "category": "Política", "description": "Autor: BERAS, Cesar, Editora: INTERSABERES, Ano: 2013", "img": "https://m.media-amazon.com/images/I/619wSZvNE0L._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "COMPOSTO MERCADOLÓGICO - CONCEITOS, IDEIAS E TENDÊNCIAS", "category": "Tecnologia", "description": "Autor: ROLON, Vanessa Estela Kotovicz, Editora: INTERSABERES, Ano: 2018", "img": "https://m.media-amazon.com/images/I/81FLcUZT4iL.jpg" },
+  { "title": "PARA O BRASIL VOLTAR A CRESCER: EVIDÊNCIAS, REFLEXÕES E CAMINHOS", "category": "Economia", "description": "Autor: LOURES, Rodrigo Costa da Rocha; SCHLEMM, Marcos Mueller; CASTOR, Belmiro Valverde Jobim, Editora: IBPEX, Ano: 2007", "img": "https://m.media-amazon.com/images/I/81B72qVbg+L._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "A NOVA ORTOGRAFIA EXPLICADA", "category": "Linguística", "description": "Autor: ZANOTTO, Normelio, Editora: EDUCS, Ano: 2008", "img": "https://m.media-amazon.com/images/I/51wqllBumeL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "ARMAZENAGEM CONTROLE E DISTRIBUIÇÃO", "category": "Tecnologia", "description": "Autor: RUSSO, Clovis Pires, Editora: INTERSABERES, Ano: 2013", "img": "https://m.media-amazon.com/images/I/71adfbjeSxL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "GÊNEROS DO DISCURSO NA ESCOLA - REDISCUTINDO PRINCÍPIOS E PRÁTICAS", "category": "Educação", "description": "Autor: BARBOSA, Jaqueline Peixoto, Editora: FTD, Ano: 2012", "img": "https://static.estantevirtual.com.br/book/00/1CS-7307-000/1CS-7307-000_detail1.jpg" },
+  { "title": "DIOS ES COMUNISTA", "category": "Filosofia", "description": "Autor: VATTIMO, Gianni, Editora: FEDUN, Ano: 2014", "img": "https://m.media-amazon.com/images/I/41sGPBc3bZL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "ESPERANDO A LOS BÁRBAROS", "category": "Literatura", "description": "Autor: VATTIMO, Gianni, Editora: FEDUN, Ano: 2014", "img": "https://m.media-amazon.com/images/I/51PvrtTUrbL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "EU E OUTRAS POESIAS", "category": "Poemas", "description": "Autor: ANJOS, Augusto dos, Editora: MARTIN CLARET, Ano: 2012", "img": "https://m.media-amazon.com/images/I/715S1W6R0XL.jpg" },
+  { "title": "O BODE EXPIATÓRIO 2 ORIGEM DE PALAVRAS, EXPRESSÕES E DITADOS POPULARES COM NOMES DE ANIMAIS", "category": "Linguística", "description": "Autor: RIBOLDI, Ari, Editora: AGE, Ano: 2009", "img": "https://m.media-amazon.com/images/I/51YN1ObC17L._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "DEZ (QUASE) AMORES", "category": "Romance", "description": "Autor: TAJES, Claudia, Editora: L&PM, Ano: 2012", "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTU9kr5fuKZgkUMUtNBamA2h2aqe-I2TrwqCA&s" },
+  { "title": "ENTRE NÓS MESMAS - POEMAS REUNIDOS", "category": "Poemas", "description": "Autor: LORDE, Audre, Editora: BAZAR DO TEMPO, Ano: 2023", "img": "https://m.media-amazon.com/images/I/71POT5mNVpS._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "A POLPA DO ENIGMA QUE ME HABITA É A MESMA QUE ME ULTRAPASSA", "category": "Poemas", "description": "Autor: REBOUÇAS, Diego, Editora: 7LETRAS, Ano: 2022", "img": "https://7letras.com.br/wp-content/uploads/2022/04/a-polpa-do-enigma-diego-reboucas-poesia-7letras.png" },
+  { "title": "TRAVESSIA", "category": "Literatura", "description": "Autor: REBOUÇAS, Diego, Editora: LIVROS ILIMITADOS, Ano: 2012", "img": "https://static.wixstatic.com/media/3ddf4b_9c8f87a87db5418698a15bd73297a3fa~mv2.jpg/v1/fit/w_500,h_500,q_90/file.jpg" },
+  { "title": "O CORAÇÃO PRONTO PARA O ROUBO", "category": "Literatura", "description": "Autor: PINA, Manuel Antônio, Editora: 34, Ano: 2018", "img": "https://m.media-amazon.com/images/I/813iexzY9nL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "POEMAS", "category": "Poemas", "description": "Autor: WISLAWA SZYMBORSKA, Editora: COMPANHIA DAS LETRAS, Ano: 2011", "img": "https://m.media-amazon.com/images/I/81Cd72FEbNS._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "NA MINHA PELE", "category": "Literatura", "description": "Autor: RAMOS, Lázaro, Editora: OBJETIVA, Ano: 2017", "img": "https://m.media-amazon.com/images/I/910gjBLAHLL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "VIDAS SECAS", "category": "Literatura", "description": "Autor: RAMOS, Graciliano, Editora: RECORD, Ano: 2023", "img": "https://m.media-amazon.com/images/I/71NYL2AbBIL.jpg" },
+  { "title": "O MENINO NO ESPELHO", "category": "Literatura", "description": "Autor: SABINO, Fernando, Editora: RECORD, Ano: 2023", "img": "https://m.media-amazon.com/images/I/61CgXdt2y4L._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "O MENINO NO ALTO DA MONTANHA", "category": "Literatura", "description": "Autor: BOYNE, John, Editora: SEGUINTE, Ano: 2016", "img": "https://m.media-amazon.com/images/I/71oneUKFtQS._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "O ZAHIR", "category": "Literatura", "description": "Autor: COELHO, Paulo, Editora: ROCCO, Ano: 2005", "img": "https://m.media-amazon.com/images/I/71R1j35Vr8L.jpg" },
+  { "title": "A ESCOLHA", "category": "Romance", "description": "Autor: CASS, Kiera, Editora: SEGUINTE, Ano: 2014", "img": "https://m.media-amazon.com/images/I/81htmSSRhXL.jpg" },
+  { "title": "ESCRAVA ISAURA (ADAPTADO)", "category": "Literatura", "description": "Autor: GUIMARÃES, Bernardo Joaquin da Silva, Editora: L&PM, Ano: 2006", "img": "https://m.media-amazon.com/images/I/610xnpfrrHL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "NAVEGANDO ATRAVÉS DOS SÉCULOS - A HISTÓRIA ROMANCEADA DA FAMÍLIA GUTERRES...", "category": "História", "description": "Autor: DANESI, Marlene Canarim, Editora: CONSULTAR, Ano: 2018", "img": "https://m.media-amazon.com/images/I/91G3pN13ZRL._UF894,1000_QL80_.jpg" },
+  { "title": "EL INCREÍBLE SPRINGER", "category": "Literatura", "description": "Autor: BERTOLINO, Damián González, Editora: EDICIONES DE LA BANDA ORIENTAL MONTEVIDEO, Ano: 2009", "img": "https://m.media-amazon.com/images/I/31Y-1QPWRkL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "TRILOGIA OLHARES LIVRO UM - EVA", "category": "Literatura", "description": "Autor: JENSINE, Ana, Editora: NOVO SÉCULO, Ano: 2012", "img": "https://m.media-amazon.com/images/I/417PJQMuFwL._AC_SY200_QL15_.jpg" },
+  { "title": "O GATO ESCARLATE", "category": "Literatura", "description": "Autor: CORONEL, Luiz, Editora: MECENAS, Ano: 2005", "img": "https://m.media-amazon.com/images/I/61mco-lNwPS._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "A ARTE DA GUERRA PLUS A ARTE DAS PEQUENAS EMPRESAS - A ESTRATÉGIA DE SUN TZU PARA AS PEQUENAS EMPRESAS", "category": "Negócios", "description": "Autor: GAGLIARDI, Gary, Editora: M.BOOK, Ano: 2008", "img": "https://m.media-amazon.com/images/I/51xpV9JayoL.jpg" },
+  { "title": "AMANHÃ VAI SER MAIOR - O QUE ACONTECEU COM O BRASIL...", "category": "Economia", "description": "Autor: PINHEIRO-MACHADO, Rosana, Editora: PLANETA BRASIL, Ano: 2019", "img": "https://m.media-amazon.com/images/I/81ISQ6IwAVL.jpg" },
+  { "title": "O TESSERACTO", "category": "Literatura", "description": "Autor: GERALD, Alex, Editora: ROCCO, Ano: 2001", "img": "https://m.media-amazon.com/images/I/61veWHCa-GL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "FUN HOME - UMA TRAGICOMÉDIA EM FAMÍLIA", "category": "Biografia", "description": "Autor: BECHDEL, Alison, Editora: TODAVIA, Ano: 2018", "img": "https://m.media-amazon.com/images/I/710cnrx1PNL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "APENAS UM DIA - TUDO PODE ACONTECER", "category": "Romance", "description": "Autor: FORMAN, Gayle, Editora: NOVO CONCEITO, Ano: 2014", "img": "https://m.media-amazon.com/images/I/91gxTm5j16L._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "CINQUENTA TONS DE LIBERDADE", "category": "Romance", "description": "Autor: JAMES, E. L., Editora: INTRÍNSECA, Ano: 2012", "img": "https://m.media-amazon.com/images/I/612HwxIewaL.jpg" },
+  { "title": "POEMAS À FLOR DA PELE - 10 ANOS", "category": "Poemas", "description": "Autor: FERRARESI, Sonia Maria, Editora: SOMAR, Ano: 2016", "img": "https://static.estantevirtual.com.br/book/00/0L8-3790-000/0L8-3790-000_detail1.jpg" },
+  { "title": "GEOGRAFIA GERAL E DO BRASIL - ESPAÇO GEOGRÁFICO E GLOBALIZAÇÃO ATLAS", "category": "Geografia", "description": "Autor: SENE, Eustáquio de; MOREIRA, João Carlos, Editora: SCIPIONE, Ano: 0", "img": "https://m.media-amazon.com/images/I/91oWIGvV51L._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "COMO NÃO SER UM BABACA - GUIA DE ETIQUETA PARA O COTIDIANO", "category": "Comportamento", "description": "Autor: DOHERTY, Meghan, Editora: INTRÍNSECA, Ano: 2015", "img": "https://m.media-amazon.com/images/I/51W4Fc2TmYL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "DEZ ARGUMENTOS PARA VOCÊ DELETAR AGORA SUAS REDES SOCIAIS", "category": "Tecnologia", "description": "Autor: LANIER, Jaron, Editora: INTRÍNSECA, Ano: 2018", "img": "https://m.media-amazon.com/images/I/71kmZ13W3xL._UF894,1000_QL80_.jpg" },
+  { "title": "O CAÇADOR DE APÓSTOLOS", "category": "Literatura", "description": "Autor: CALDELA, Leonel, Editora: JAMBÔ, Ano: 2010", "img": "https://m.media-amazon.com/images/I/911Ter80EmL._UF894,1000_QL80_.jpg" },
+  { "title": "VALSANDO COM A GATA", "category": "Literatura", "description": "Autor: HOUSTON, Pam, Editora: RECORD, Ano: 2005", "img": "https://m.media-amazon.com/images/I/510QgftAaKL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "ARTISTAS DOS OSSOS", "category": "Literatura", "description": "Autor: ROUX, Madeleine, Editora: VERGARA & RIBA, Ano: 2015", "img": "https://m.media-amazon.com/images/I/81fKK44rLRL.jpg" },
+  { "title": "A EPOPEIA DOS FARRAPOS", "category": "História", "description": "Autor: CORONEL, Luiz, Editora: GAZETA, Ano: 2013", "img": "https://m.media-amazon.com/images/I/41qTseKo6ES._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "DA DEPRESSÃO À DISFUNÇÃO SEXUAL (E VICE-VERSA)", "category": "Saúde", "description": "Autor: ABDO, Carmita, Editora: ABDR, Ano: 2010", "img": "https://m.media-amazon.com/images/I/41Uq6Q8gHQL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "PÓESOL", "category": "Literatura", "description": "Autor: VEIGA, Lucas, Editora: CHIADO, Ano: 2018", "img": "https://m.media-amazon.com/images/I/81J-ded6KSL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "VIDAS MUITO BOAS", "category": "Literatura", "description": "Autor: ROWLING, J. K., Editora: ROCCO, Ano: 2008", "img": "https://m.media-amazon.com/images/I/613HEqSn73L._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "COMÉDIAS PARA SE LER NA ESCOLA", "category": "Literatura", "description": "Autor: VERISSIMO, Luis Fernando, Editora: OBJETIVA, Ano: 2017", "img": "https://m.media-amazon.com/images/I/81JiRe21N+L.jpg" },
+  { "title": "SÓ POR HOJE E PARA SEMPRE: DIÁRIO DE RECOMEÇO", "category": "Autobiografia", "description": "Autor: RUSSO, Renato, Editora: COMPANHIA DAS LETRAS, Ano: 2015", "img": "https://m.media-amazon.com/images/I/91p7iiRGCtL._UF894,1000_QL80_.jpg" },
+  { "title": "EU IMORTAL", "category": "Biografia", "description": "Autor: 'BENHUR & VALDETE', Editora: NOVO SÉCULO, Ano: 2010", "img": "https://images-americanas.b2w.io/produtos/7513338188/imagens/livro-eu-imortal-benhur-valdete/7513338190_1_large.jpg" },
+  { "title": "ANIMAIS FANTÁSTICOS E ONDE HABITAM - GUIA DO MUNDO MÁGICO DO FILME", "category": "Fantasias", "description": "Autor: KOGGE, Michael, Editora: ROCCO, Ano: 2016", "img": "https://m.media-amazon.com/images/I/A1w6uOjvA5L._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "O BODE EXPIATÓRIO - Origem de palavras, expressões, e ditados populares com nomes de animais", "category": "Lingüística", "description": "Autor: RIBOLDI, Ari, Editora: AGE, Ano: 2007", "img": "https://m.media-amazon.com/images/I/51YN1ObC17L.jpg" },
+  { "title": "6º ANTOLOGIA", "category": "Poesia", "description": "Autor: PREFEITURA DE BAGÉ E SMED, Editora: LEB, Ano: 2022", "img": "https://www.jornalminuano.com.br/public/images/full/img-2fecdeaa123ef60a82894a45c5a7ae26-1671728899.jpg" },
+  { "title": "A COR PÚRPURA", "category": "Literatura", "description": "Autor: WALKER, Alice, Editora: JOSÉ OLYMPIO, Ano: 2023", "img": "https://m.media-amazon.com/images/I/719J3+g-GuL.jpg" },
+  { "title": "AFTER", "category": "Romance", "description": "Autor: TODD, Anna, Editora: PARALELA, Ano: 2014", "img": "https://m.media-amazon.com/images/I/71sRAcBottL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "O BEM-AMADO", "category": "Teatro", "description": "Autor: GOMES, Dias, Editora: BERTRAND BRASIL, Ano: 2021", "img": "https://m.media-amazon.com/images/I/71+Ek5YqdyL._UF894,1000_QL80_.jpg" },
+  { "title": "HUMANOS - UMA BREVE HISTÓRIA DE COMO FODEMOS COM TUDO", "category": "História", "description": "Autor: PHILLIPS, Tom, Editora: BESTSELLER, Ano: 2018", "img": "https://m.media-amazon.com/images/I/71TqszatpCL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "A NOITE DO MASSACRE", "category": "História", "description": "Autor: CONY, Carlos Heitor, Editora: OBJETIVA, Ano: 2012", "img": "https://m.media-amazon.com/images/I/81QYX7k0jWL.jpg" },
+  { "title": "AMAR PODE DAR CERTO", "category": "Autoajuda", "description": "Autor: SHINYASHIKI, Roberto; DUMÊT, Eliana Bittencourt, Editora: GENTE, Ano: 1988", "img": "https://m.media-amazon.com/images/I/81t89jlVWHL._UF894,1000_QL80_.jpg" },
+  { "title": "A FORÇA", "category": "Romance", "description": "Autor: WINSLOW, Don, Editora: HARPER COLLINS, Ano: 2018", "img": "https://m.media-amazon.com/images/I/717YyeVzqiL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "PERSUASÃO", "category": "Romance", "description": "Autor: AUSTEN, Jane, Editora: CITADEL, Ano: 2022", "img": "https://m.media-amazon.com/images/I/814Y0DO2OZL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "A FILHA PERDIDA", "category": "Romance", "description": "Autor: FERRANTE, Elena, Editora: INTRÍNSECA, Ano: 2016", "img": "https://m.media-amazon.com/images/I/61D8qNCKlAL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "FORA DE MIM", "category": "Romance", "description": "Autor: MEDEIROS, Martha, Editora: OBJETIVA, Ano: 2010", "img": "https://m.media-amazon.com/images/I/71x20vb7LSL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "O CAÇADOR DE PIPAS", "category": "Literatura", "description": "Autor: HOSSEINI, Khaled, Editora: NOVA FRONTEIRA, Ano: 2003", "img": "https://m.media-amazon.com/images/I/81yVzXTgLzL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "A CIDADE DO SOL", "category": "Literatura", "description": "Autor: HOSSEINI, Khaled, Editora: NOVA FRONTEIRA, Ano: 2007", "img": "https://m.media-amazon.com/images/I/71kYXyAx45S._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "VERGONHA DOS PÉS", "category": "Poemas", "description": "Autor: YOUNG, Fernanda, Editora: OBJETIVA, Ano: 1996", "img": "https://m.media-amazon.com/images/I/71ERW9OwbCL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "EXERCÍCIOS FILOSÓFICOS", "category": "Filosofia", "description": "Autor: ARONDEL-ROHAUT, Madeleine, Editora: MARTINS FONTES, Ano: 2008", "img": "https://m.media-amazon.com/images/I/41cWRXk7J-L._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "NOS CAMINHOS DO BARROCO", "category": "História", "description": "Autor: MARTINS, Alberto; KOK, Glória, Editora: CLAROENIGMA, Ano: 2009", "img": "https://cdl-static.s3-sa-east-1.amazonaws.com/covers/gg/9788581661247/nos-caminhos-do-barroco.jpg" },
+  { "title": "ÓDIO, AMIZADE, NAMORO, AMOR, CASAMENTO", "category": "Relacionamento", "description": "Autor: MUNRO, Alice, Editora: BIBLIOTECA AZUL, Ano: 2013", "img": "https://m.media-amazon.com/images/I/81Jpz3cBHmL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "EU PASSARINHO", "category": "Literatura", "description": "Autor: GUTERRES, Giana, Editora: TOMA AÍ UM POEMA, Ano: 2021", "img": "https://m.media-amazon.com/images/I/71Foye+aCRL._UF894,1000_QL80_.jpg" },
+  { "title": "COMO EU SOBREVIVI QUANDO VOCÊ TROUXE O INVERNO PARA DENTRO DE MIM", "category": "Autoajuda", "description": "Autor: GUTERRES, Giana, Editora: TOMA AÍ UM POEMA, Ano: 2022", "img": "https://estacaocultural.com.br/controle/arquivo/29459680.jpg" },
+  { "title": "A CURA - COMO EXPRESSÃO DA MISERICÓRDIA DE DEUS", "category": "Religião", "description": "Autor: HEALEY, Mary, Editora: CANÇÃO NOVA, Ano: 2019", "img": "https://m.media-amazon.com/images/I/81xSHnTCcbL._UF894,1000_QL80_.jpg" },
+  { "title": "O SEGREDO DOS ANJOS", "category": "Espiritualidade", "description": "Autor: BRITO, Rafael, Editora: ANGELUS, Ano: 2021", "img": "https://m.media-amazon.com/images/I/51zZL96nUFL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "CANDIDÍASE - A PRAGA", "category": "Saúde", "description": "Autor: HIRSCH, Sonia, Editora: CORRECOTIA, Ano: 2010", "img": "https://m.media-amazon.com/images/I/6160TLijMfL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "3ª COLETÂNEA DE POEMAS + SONETOS + CORDÉIS", "category": "Poesia", "description": "Autor: APPARERE, Projeto, Editora: PERSE, Ano: 2020", "img": "https://images-americanas.b2w.io/produtos/01/00/img/1489596/0/1489596030_1GG.jpg" },
+  { "title": "CIGANA CATARINA", "category": "Ficção", "description": "Autor: HORA, Marli, Editora: VISEU, Ano: 2024", "img": "https://m.media-amazon.com/images/I/81wwvYopkpL._UF894,1000_QL80_.jpg" },
+  { "title": "PÉTALAS DE AKAYAMA", "category": "Ficção", "description": "Autor: THAI, Bex, Editora: NEWPOP, Ano: 2023", "img": "https://m.media-amazon.com/images/I/91q8ft9oYxL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "O GUIA DOMOCHILEIRO DAS GALÁXIAS", "category": "Humor", "description": "Autor: ADAMS, Douglas, Editora: ARQUEIRO, Ano: 2021", "img": "https://m.media-amazon.com/images/I/81eMrK+qVCL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "SASAKI E MIYANO", "category": "Manga", "description": "Autor: HARUSONO, Shou, Editora: PANINI, Ano: 2016", "img": "https://m.media-amazon.com/images/I/61ol8modMML._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "ARLINDO", "category": "Literatura", "description": "Autor: ILUSTRALU, Editora: COMPANHIA DAS LETRAS, Ano: 2021", "img": "https://m.media-amazon.com/images/I/81HBGttIXsL._UF894,1000_QL80_.jpg" },
+  { "title": "OUTROS JEITOS DE USAR A BOCA", "category": "Poesia", "description": "Autor: KAUR, Rupi, Editora: PLANETA, Ano: 2015", "img": "https://m.media-amazon.com/images/I/71KsMfWMX3L.jpg" },
+  { "title": "O QUE O SOL FAZ COM AS FLORES", "category": "Poesia", "description": "Autor: KAUR, Rupi, Editora: PLANETA, Ano: 2017", "img": "https://m.media-amazon.com/images/I/81hhnBCGeQL.jpg" },
+  { "title": "A PRINCESA SALVA A SI MESMA NESTE LIVRO", "category": "Feminismo", "description": "Autor: LOVELACE, Amanda, Editora: LEYA, Ano: 2016", "img": "https://m.media-amazon.com/images/I/61l3pp4owJL.jpg" },
+  { "title": "THE LYING GAME - O JOGO DA MENTIRA", "category": "Mistério", "description": "Autor: SHEPARD, Sara, Editora: ROCCO, Ano: 2013", "img": "https://m.media-amazon.com/images/I/81pN1qSQozL._UF894,1000_QL80_.jpg" },
+  { "title": "REFÉM DA OBSESSÃO", "category": "Suspense", "description": "Autor: KATSU, Alma, Editora: NOVO CONCEITO, Ano: 2012", "img": "https://m.media-amazon.com/images/I/71ZZ0mIxDLL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "O LIVRO DOS RESSIGNIFICADOS", "category": "Filosofia", "description": "Autor: DOEDERLEIN, João, Editora: EDITORA PARALELA, Ano: 2017", "img": "https://m.media-amazon.com/images/I/91CKi3+w-KL.jpg" },
+  { "title": "CIDADES DE PAPEL", "category": "Romance", "description": "Autor: GREEN, John, Editora: INTRÍSECA, Ano: 2008", "img": "https://m.media-amazon.com/images/I/61otKosI+OL.jpg" },
+  { "title": "ESCRAVIDÃO - VOLUME 1", "category": "História", "description": "Autor: GOMES, Laurentino, Editora: GLOBO LIVROS, Ano: 2019", "img": "https://m.media-amazon.com/images/I/81X9AJ-WfKL.jpg" },
+  { "title": "UM GNOMO NA MINHA HORTA", "category": "Infantojuvenil", "description": "Autor: ROCHA, Wilson, Editora: EDITORA ÁTICA, Ano: 1993", "img": "https://m.media-amazon.com/images/I/713zfh24YsL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "A REVOLUÇÃO DOS BICHOS", "category": "Clássico", "description": "Autor: ORWELL, George, Editora: EDITORA ARQUEIRO, Ano: 2021", "img": "https://m.media-amazon.com/images/I/91BsZhxCRjL.jpg" },
+  { "title": "A HISTÓRIA DO UNIVERSO PARA QUEM TEM PRESSA", "category": "Ciência", "description": "Autor: STUART, Colin, Editora: VALENTINA, Ano: 2018", "img": "https://m.media-amazon.com/images/I/819pAW6nzsL.jpg" },
+  { "title": "O LIVRO DAS SOMBRAS - VOLUME 1", "category": "Mistério", "description": "Autor: SAUVAGE, La Belle, Editora: SCHWARCZ S.A., Ano: 2017", "img": "https://m.media-amazon.com/images/I/91gwT-x2iuL.jpg" },
+  { "title": "A JOIA DA ALMA", "category": "Espiritualidade", "description": "Autor: SOARELE, Karen, Editora: JAMBÔ, Ano: 2017", "img": "https://m.media-amazon.com/images/I/61knMEzPkqL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "O LIVRO DEFINITIVO DOS SONHOS", "category": "Psicologia", "description": "Autor: BIDU, João, Editora: ELEMENTO SECRETO, Ano: 2017", "img": "https://m.media-amazon.com/images/I/91c3IBO8q5L._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "TUDO TEM SEU PREÇO", "category": "Literatura", "description": "Autor: GASPARETTO, Zíbia, Editora: VIDA E CONSCIÊNCIA, Ano: 2009", "img": "https://m.media-amazon.com/images/I/81COvzkdH3L._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "O ESPÍRITO DO ZEN", "category": "Filosofia", "description": "Autor: WATTS, Alan, Editora: L&PM, Ano: 2017", "img": "https://m.media-amazon.com/images/I/51A6WoBSTdL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "CAPITÃES DE AREIA", "category": "Clássico", "description": "Autor: AMADO, Jorge, Editora: COMPANHIA DE BOLSO, Ano: 2010", "img": "https://m.media-amazon.com/images/I/81t7altQZxL.jpg" },
+  { "title": "A JÓIA DA ALMA", "category": "Espiritualidade", "description": "Autor: SOARELE, Karen, Editora: JAMBÔ, Ano: 2017", "img": "https://m.media-amazon.com/images/I/61knMEzPkqL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "ALMAS AFINS", "category": "Ficção", "description": "Autor: ARMOND, Edgard, Editora: ALIANÇA, Ano: 2013", "img": "https://m.media-amazon.com/images/I/71MG8+oSzfL._AC_UF1000,1000_QL80_.jpg" },
+  { "title": "ADEUS GANA", "category": "História", "description": "Autor: SELASI, Taiyke, Editora: PLANETA, Ano: 2019", "img": "https://m.media-amazon.com/images/I/91ZnQwhbrHS.jpg" },
+  { "title": "PALAVRA", "category": "Literatura", "description": "Autor: DKG, Editora: ESCRITÓRIO DE RIMOTERAPIA, Ano: 2023", "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMa2OjMZ--vFcwXyoDRdKTcIqYcr-7QJoHZQ&s" },
+  { "title": "VEM POETIZAR O MUNDO COMIGO?", "category": "Poesia", "description": "Autor: SOUZA, Eny, Editora: INSIDE, Ano: 2022", "img": "https://editorialcasa.com.br/wp-content/uploads/2024/09/Vem-poetizar-ano-3.png" },
+  { "title": "SER BOM NÃO É SER BONZINHO", "category": "Autoajuda", "description": "Autor: THEBAS, Cláudio, Editora: PAIDÓS, Ano: 2021", "img": "https://m.media-amazon.com/images/I/71uhroTwTHS._AC_UF1000,1000_QL80_.jpg" }
+  ];
+
+        let filteredBooks = [...books];
+        const booksPerPage = 8;
+        let currentPage = 1;
+
+        function displayBooks() {
+            const startIndex = (currentPage - 1) * booksPerPage;
+            const endIndex = startIndex + booksPerPage;
+            const booksToDisplay = filteredBooks.slice(startIndex, endIndex);
+            const bookGrid = document.getElementById('bookGrid');
+            bookGrid.innerHTML = '';
+
+            booksToDisplay.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.classList.add('livro-card');
+                bookCard.innerHTML = `
+                    <img src="${book.img}" alt="Capa do Livro">
+                    <h3>${book.title}</h3>
+                    <p>${book.description}</p>
+                    <p class="category">${book.category}</p>
+                `;
+                bookGrid.appendChild(bookCard);
+            });
+        }
+
+        function filterBooks() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+
+            filteredBooks = books.filter(book => {
+                return (
+                    (book.title.toLowerCase().includes(searchInput)) &&
+                    (categoryFilter === '' || book.category === categoryFilter)
+                );
+            });
+
+            currentPage = 1;
+            displayBooks();
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayBooks();
+            }
+        }
+
+        function nextPage() {
+            if (currentPage * booksPerPage < filteredBooks.length) {
+                currentPage++;
+                displayBooks();
+            }
+        }
+
+        function openDonateModal() {
+            document.getElementById('donateModal').style.display = 'flex';
+        }
+
+        function closeDonateModal() {
+            document.getElementById('donateModal').style.display = 'none';
+        }
+
+        displayBooks();
+    </script>
+</body>
+
+</html>
